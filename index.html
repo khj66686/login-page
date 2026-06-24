@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>로그인</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -138,6 +139,7 @@
     }
 
     .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .divider {
       display: flex;
@@ -183,6 +185,28 @@
     }
 
     .signup a { color: #2563eb; text-decoration: none; }
+
+    .message {
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-align: center;
+      display: none;
+    }
+
+    .message.success {
+      display: block;
+      background: #f0fdf4;
+      color: #15803d;
+      border: 0.5px solid #bbf7d0;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #dc2626;
+      border: 0.5px solid #fecaca;
+    }
   </style>
 </head>
 <body>
@@ -223,7 +247,9 @@
         <label for="remember">로그인 상태 유지</label>
       </div>
 
-      <button type="submit" class="btn-primary">로그인</button>
+      <div id="message" class="message"></div>
+
+      <button type="submit" id="login-btn" class="btn-primary">로그인</button>
 
       <div class="divider"><span>또는</span></div>
 
@@ -237,6 +263,11 @@
   </div>
 
   <script>
+    const SUPABASE_URL = 'https://ahfmcucbbbjixczeoltj.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZm1jdWNiYmJqaXhjemVvbHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQwMDUsImV4cCI6MjA5Nzg2MDAwNX0.7FoYzh4uhdrx5VHgCUMfWqVk7jRqbwgFkeZXIPiMthA';
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     function togglePw() {
       const pw = document.getElementById('password');
       const icon = document.getElementById('eye-icon');
@@ -249,9 +280,32 @@
       }
     }
 
-    function handleLogin(e) {
+    function showMessage(text, type) {
+      const el = document.getElementById('message');
+      el.textContent = text;
+      el.className = 'message ' + type;
+    }
+
+    async function handleLogin(e) {
       e.preventDefault();
-      alert('로그인 버튼이 클릭되었습니다.');
+      const email = document.getElementById('email').value;
+      const btn = document.getElementById('login-btn');
+
+      btn.disabled = true;
+      btn.textContent = '로그인 중...';
+
+      const { error } = await supabase
+        .from('login_logs')
+        .insert([{ email }]);
+
+      if (error) {
+        showMessage('오류가 발생했습니다: ' + error.message, 'error');
+      } else {
+        showMessage('로그인 정보가 저장됐습니다!', 'success');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '로그인';
     }
   </script>
 </body>
