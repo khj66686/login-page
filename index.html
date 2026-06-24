@@ -266,7 +266,7 @@
     const SUPABASE_URL = 'https://ahfmcucbbbjixczeoltj.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoZm1jdWNiYmJqaXhjemVvbHRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyODQwMDUsImV4cCI6MjA5Nzg2MDAwNX0.7FoYzh4uhdrx5VHgCUMfWqVk7jRqbwgFkeZXIPiMthA';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function togglePw() {
       const pw = document.getElementById('password');
@@ -294,7 +294,7 @@
       btn.disabled = true;
       btn.textContent = '로그인 중...';
 
-      const { error } = await supabase
+      const { error } = await _supabase
         .from('login_logs')
         .insert([{ email }]);
 
